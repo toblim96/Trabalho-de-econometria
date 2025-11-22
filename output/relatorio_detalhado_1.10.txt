@@ -1,0 +1,41 @@
+RELATÓRIO DETALHADO - QUESTÃO 1.10
+==================================
+
+TESTE DE WHITE PARA DETECÇÃO DE HETEROCEDASTICIDADE
+--------------------------------------------------
+
+ESPECIFICAÇÃO DO MODELO:
+Variável Dependente: log_wage_hetero
+Variáveis Independentes: education, experience, experience_sq,
+                         north, northeast, south, centerwest, male, white
+
+ESPECIFICAÇÃO DO TESTE DE WHITE:
+bptest(modelo, ~ fitted(modelo) + I(fitted(modelo)^2))
+
+RESULTADOS DO TESTE:
+--------------------
+Estatística LM: 20.0226 
+Graus de liberdade: 2
+p-value: 4.5e-05 
+
+INTERPRETAÇÃO:
+--------------
+Hipótese Nula (H0): Homocedasticidade
+Hipótese Alternativa (H1): Heterocedasticidade
+
+CONCLUSÃO: REJEITAMOS H0 ao nível de 5% de significância
+           → Há evidências de HETEROCEDASTICIDADE
+           → A variância dos erros NÃO é constante
+
+RESULTADO ESPERADO:
+-------------------
+Como log_wage_hetero foi gerado com erros heterocedásticos,
+espera-se REJEITAR H0 (p-value < 0.05)
+
+IMPLICAÇÕES DA HETEROCEDASTICIDADE:
+------------------------------------
+1. Estimadores OLS são ainda não viesados
+2. Mas os erros padrão são viesados
+3. Testes t e F podem ser inválidos
+4. Intervalos de confiança podem ser incorretos
+5. Soluções: Erros padrão robustos ou FGLS

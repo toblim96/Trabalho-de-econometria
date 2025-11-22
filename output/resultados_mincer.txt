@@ -1,0 +1,33 @@
+RESULTADOS DA EQUAÇÃO DE MINCER
+================================
+Data: 21/11/2025 
+Observações: 2000 
+
+ESPECIFICAÇÃO DO MODELO:
+Variável Dependente: Log do Salário
+Variáveis Independentes:
+  - Anos de estudo
+  - Experiência profissional
+  - Experiência ao quadrado
+  - Dummies regionais (referência: Sudeste)
+  - Dummy de sexo (referência: Feminino)
+  - Dummy de raça (referência: Não branco)
+
+ESTATÍSTICAS DO MODELO:
+R-quadrado: 0.6679 
+R-quadrado ajustado: 0.6664 
+Estatística F: 444.76 
+
+INTERPRETAÇÃO DOS COEFICIENTES:
+================================
+Retorno da educação: 0.1292 (cada ano adicional de estudo aumenta o salário em 13.79 %)
+Retorno da experiência: 0.0327 
+Experiência ao quadrado: -0.00047 (indica retornos decrescentes)
+Prêmio salarial masculino: 0.2489 (homens ganham 28.26 % mais)
+Prêmio salarial brancos: 0.1965 (brancos ganham 21.71 % mais)
+
+EFEITOS REGIONAIS (vs. SUDESTE):
+Norte: -0.1644 
+Nordeste: -0.1765 
+Sul: 0.1146 
+Centro-Oeste: 0.0446 

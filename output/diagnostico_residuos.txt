@@ -1,0 +1,17 @@
+DIAGNÓSTICO DOS RESÍDUOS - MODELO MINCER
+========================================
+Data: 21/11/2025 
+
+ESTATÍSTICAS DOS RESÍDUOS:
+Média: 0 (deve ser próxima de 0)
+Mediana: -0.00473 
+Desvio Padrão: 0.346753 
+Variância: 0.120237 
+Mínimo: -1.140395 
+Máximo: 1.259968 
+
+INTERPRETAÇÃO:
+• Resíduos com média próxima de 0: BOA (modelo não tendencioso)
+• Distribuição simétrica: BOA (suposição de normalidade)
+• Resíduos grandes ao quadrado: indicam observações influentes
+• Padrão sistemático nos resíduos: pode indicar má especificação

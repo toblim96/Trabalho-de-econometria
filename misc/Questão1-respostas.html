@@ -1,0 +1,106 @@
+---
+title: "Questão 1"
+author: "Juliana, Crisly e Tobias"
+date: '2025.2'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+Resolução
+
+Questão 1)
+
+Base geral _master: source("code/_master.R")
+Configurar base de dados:source("code/1_gera_dados.R")
+
+1.1)
+shell.exec(file.path(output_dir, "tabela_estatisticas.html"))
+
+1.2)Salário x educação
+cat("Abrindo gráfico...\n")
+shell.exec(file.path(output_dir, "grafico_salario_educacao.png"))
+
+1.2)Logsalário x educação
+cat("Abrindo gráfico...\n")
+shell.exec(file.path(output_dir, "grafico_logsalario_educacao.png"))
+
+1.3)
+cat("Abrindo gráfico...\n")
+shell.exec(file.path(output_dir, "grafico_logsalario_experiencia.png"))
+
+1.4) Início das regressões com logsalário
+
+Resultado das regreções:
+cat(readLines("output/resultados_mincer.txt"), sep = "\n")
+shell.exec(file.path(output_dir, "modelo_mincer.html"))
+
+1.5)
+resultado_regressao_formatado.html: 
+browseURL('output/resultado_regressao_formatado.html')
+resultado_completo.html: 
+browseURL('output/resultado_completo.html')
+resultado_analise.html:
+browseURL('output/resultado_analise.html')
+
+1,6)Gráfico 3D: 
+browseURL('output/grafico_3d_salario.html')
+
+1.7)
+residuos <- residuals(modelo_mincer)
+residuos_quadrado <- residuos^2
+Diagnóstico dos resíduos:  
+browseURL('output/diagnostico_residuos.txt')
+Histograma dos resíduos: 
+browseURL('output/histograma_residuos.png')
+Histograma dos resíduos quadrados: 
+browseURL('output/histograma_residuos_quadrados.png')
+
+1.8) Início das regressões log_wage_hetero
+  1.4)shell.exec(file.path(output_dir, "modelo_mincer_hetero.html"))
+  1.5)shell.exec(file.path(output_dir, "resultado_comparativo_1.5.html"))
+  1.6)browseURL('output/grafico_3d_hetero_1.6.html')
+  1.7)shell.exec(file.path(output_dir, "histograma_residuos_hetero_1.7.png"))
+O novo gráfico tem padrão afunilado, pois no modelo com log_wage_hetero, a variância dos resíduos aumenta com a educação, caracterizando heterocedasticidade.
+
+1.9)
+O teste nas condições pedidas rejeita a heterocedasticidade enquanto não rejeita a homocedasticidade.
+browseURL('output/teste_white_homo_1.9.html')
+
+1.10)
+Reporte do resultado:
+cat(readLines("output/relatorio_detalhado_1.10.txt"), sep = "\n")
+
+1.11)
+O FGLS além de ter erro médio menor do que o OLS, consegue gerar estimativas mais próximas dos parâmetros reais.
+browseURL('output/comparacao_fgls_1.11.html')
+
+1.12)
+OS resultados obtidos nos revelam que, passando de duas mil para duzentas mil amostras, O erro OLS reduziu de 0,0378 para 0,0023, melhoria de 94,1%.
+Enquanto isso, o erro para o teste FGLS foi de 0,0360 para 0,0022, melhoria de 94%. 
+Relatório com os resultados: 
+browseURL('output/relatorio_detalhado_1.12.txt')
+
+

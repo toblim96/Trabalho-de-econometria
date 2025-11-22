@@ -1,0 +1,90 @@
+RELATÓRIO DETALHADO - QUESTÃO 1.11
+==================================
+
+ANÁLISE FGLS vs OLS - PROXIMIDADE DOS PARÂMETROS VERDADEIROS
+-----------------------------------------------------------
+
+METODOLOGIA FGLS:
+1. Estimação OLS inicial
+2. Modelagem da variância: resíduos² ~ fitted + fitted²
+3. Pesos = 1/variância_estimada
+4. Reestimação com Mínimos Quadrados Ponderados
+
+RESULTADOS DA COMPARAÇÃO:
+-------------------------
+Erro médio absoluto - OLS: 0.0378 
+Erro médio absoluto - FGLS: 0.036 
+Melhoria do FGLS sobre OLS: 5 %
+
+ANÁLISE POR VARIÁVEL:
+---------------------
+(Intercept) :
+  Verdadeiro: 6.8 
+  OLS: 6.7076  (Erro: 0.0924 )
+  FGLS: 6.7208  (Erro: 0.0792 )
+  ✅ FGLS MELHOR que OLS
+
+education :
+  Verdadeiro: 0.13 
+  OLS: 0.1313  (Erro: 0.0013 )
+  FGLS: 0.1313  (Erro: 0.0013 )
+  ❌ FGLS PIOR que OLS
+
+experience :
+  Verdadeiro: 0.035 
+  OLS: 0.0332  (Erro: 0.0018 )
+  FGLS: 0.0319  (Erro: 0.0031 )
+  ❌ FGLS PIOR que OLS
+
+experience_sq :
+  Verdadeiro: -5e-04 
+  OLS: -3e-04  (Erro: 2e-04 )
+  FGLS: -3e-04  (Erro: 2e-04 )
+  ❌ FGLS PIOR que OLS
+
+north :
+  Verdadeiro: -0.15 
+  OLS: -0.0407  (Erro: 0.1093 )
+  FGLS: -0.049  (Erro: 0.101 )
+  ✅ FGLS MELHOR que OLS
+
+northeast :
+  Verdadeiro: -0.2 
+  OLS: -0.1839  (Erro: 0.0161 )
+  FGLS: -0.1764  (Erro: 0.0236 )
+  ❌ FGLS PIOR que OLS
+
+south :
+  Verdadeiro: 0.08 
+  OLS: 0.0871  (Erro: 0.0071 )
+  FGLS: 0.0857  (Erro: 0.0057 )
+  ✅ FGLS MELHOR que OLS
+
+centerwest :
+  Verdadeiro: 0.05 
+  OLS: 0.1338  (Erro: 0.0838 )
+  FGLS: 0.1405  (Erro: 0.0905 )
+  ❌ FGLS PIOR que OLS
+
+male :
+  Verdadeiro: 0.25 
+  OLS: 0.247  (Erro: 0.003 )
+  FGLS: 0.2509  (Erro: 9e-04 )
+  ✅ FGLS MELHOR que OLS
+
+white :
+  Verdadeiro: 0.18 
+  OLS: 0.2434  (Erro: 0.0634 )
+  FGLS: 0.2341  (Erro: 0.0541 )
+  ✅ FGLS MELHOR que OLS
+
+CONCLUSÃO GERAL:
+----------------
+✅ FGLS PRODUZIU ESTIMATIVAS MAIS PRÓXIMAS DOS VERDADEIROS
+   Melhoria média de 5 % em relação ao OLS
+   FGLS é mais eficiente na presença de heterocedasticidade
+
+RESULTADO ESPERADO:
+-------------------
+Em teoria, FGLS deveria produzir estimativas mais eficientes
+(menor variância) que OLS na presença de heterocedasticidade

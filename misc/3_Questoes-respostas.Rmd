@@ -1,0 +1,202 @@
+---
+title: "Repasse Cambial - Setor 13"
+author: "Grupo: Juliana, Crisly e Tobias"
+date: "Novembro 2025"
+output: 
+  html_document:
+    toc: true
+    theme: flatly
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(readxl); library(dplyr); library(lmtest)
+library(sandwich); library(stargazer); library(ggplot2)
+
+dados <- read_excel("input/T2dados.xls") %>% rename(setor = setor13)
+```
+
+# Modelo Básico
+
+Estimamos: $\text{Setor13}_t = \alpha + \beta_1 \text{cambio}_t + \beta_2 \text{ibcbr}_t + \varepsilon_t$
+
+```{r}
+m1 <- lm(setor ~ cambio + ibcbr, data = dados)
+summary(m1)
+```
+
+# Interpretação dos Coeficientes
+
+**Coeficiente do Câmbio (β₁):** `r round(coef(m1)["cambio"], 4)`
+
+Interpretação: Um aumento de 1 ponto percentual na taxa de câmbio está associado a um aumento de `r round(coef(m1)["cambio"], 4)` p.p. nos preços do setor 13. O sinal é positivo, que faz sentido teoricamente - quando o real se desvaloriza (câmbio sobe), produtos importados ficam mais caros e isso pressiona os preços do setor.
+
+Porém, o coeficiente não é estatisticamente significativo (p-valor = `r round(summary(m1)$coef["cambio", "Pr(>|t|)"], 3)`), então não podemos afirmar que existe um repasse cambial robusto neste modelo básico.
+
+**Coeficiente do IBC-Br (β₂):** `r round(coef(m1)["ibcbr"], 4)`
+
+Uma variação de 1 p.p. na atividade econômica está associada a uma variação de `r round(coef(m1)["ibcbr"], 4)` p.p. nos preços. O sinal também é positivo, condizente com a teoria - maior atividade econômica aumenta a demanda e pressiona preços. Mas também não é significativo (p-valor = `r round(summary(m1)$coef["ibcbr", "Pr(>|t|)"], 3)`).
+
+O R² muito baixo (0.004) indica que esse modelo explica quase nada da variação dos preços, sugerindo que faltam variáveis importantes.
+
+# Teste de Autocorrelação (Ljung-Box)
+
+```{r}
+Box.test(residuals(m1), lag = 12, type = "Ljung-Box")
+```
+
+**Hipóteses:**  
+- H₀: Não há autocorrelação nos resíduos  
+- H₁: Há autocorrelação nos resíduos
+
+**Resultado:** O p-valor de `r round(Box.test(residuals(m1), lag=12, type="Ljung-Box")$p.value, 3)` é maior que 0.05, então não rejeitamos a hipótese nula. Isso significa que não encontramos evidência estatística de que os resíduos estejam correlacionados ao longo do tempo. 
+
+Em outras palavras, o padrão de erros parece aleatório, o que é desejável num modelo de regressão. Porém, isso não significa que o modelo esteja bem especificado - o R² baixo já indicou problemas.
+
+# Modelo com Sazonalidade
+
+```{r}
+dados$mes <- rep(1:12, length.out = nrow(dados))
+for(i in 2:12) dados[[paste0("mes", i)]] <- ifelse(dados$mes == i, 1, 0)
+
+m2 <- lm(setor ~ cambio + ibcbr + mes2 + mes3 + mes4 + mes5 + mes6 + 
+           mes7 + mes8 + mes9 + mes10 + mes11 + mes12, data = dados)
+summary(m2)
+```
+
+# Comparação dos Modelos
+
+```{r results='asis'}
+stargazer(m1, m2, type = "html",
+          column.labels = c("Básico", "Sazonal"), digits = 4)
+```
+
+**Mudança nos coeficientes:**
+
+Câmbio mudou de `r round(coef(m1)["cambio"], 4)` para `r round(coef(m2)["cambio"], 4)` (diferença: `r round(coef(m2)["cambio"] - coef(m1)["cambio"], 4)`).
+
+IBC-Br mudou de `r round(coef(m1)["ibcbr"], 4)` para `r round(coef(m2)["ibcbr"], 4)`.
+
+A inclusão das dummies sazonais alterou bastante os coeficientes, inclusive invertendo o sinal do câmbio. Isso acontece porque havia um viés de variável omitida - a sazonalidade estava confundindo a relação entre câmbio e preços.
+
+**Dummies sazonais:** As dummies capturam efeitos específicos de cada mês em relação a janeiro (referência). Por exemplo:
+
+- **mes4 (Abril):** coeficiente ≈ 1.47, significativo - os preços em abril são em média 1.47 p.p. maiores que em janeiro
+- **mes5 (Maio):** coeficiente ≈ 1.46, significativo - padrão similar a abril
+
+Esses efeitos fazem sentido se o setor 13 tiver alguma característica sazonal específica (safras, demanda de fim de trimestre, etc).
+
+O R² subiu para 0.228, mostrando que a sazonalidade explica parte importante da variação de preços.
+
+# Ljung-Box (Modelo 2)
+
+```{r}
+Box.test(residuals(m2), lag = 12, type = "Ljung-Box")
+```
+
+P-valor = `r round(Box.test(residuals(m2), lag=12, type="Ljung-Box")$p.value, 3)` > 0.05. 
+
+Continuamos sem evidência de autocorrelação. A inclusão das dummies sazonais não piorou (nem melhorou muito) esse aspecto, mas melhorou bastante o ajuste geral do modelo.
+
+# Modelo com Defasagens
+
+```{r}
+dados <- dados %>%
+  mutate(setor_lag = lag(setor, 1), cambio_lag = lag(cambio, 1))
+
+m3 <- lm(setor ~ cambio + ibcbr + setor_lag + cambio_lag + 
+           mes2 + mes3 + mes4 + mes5 + mes6 + mes7 + mes8 + 
+           mes9 + mes10 + mes11 + mes12, data = dados)
+```
+
+**Impacto total do repasse cambial:**
+
+Para calcular o efeito completo do câmbio sobre os preços, precisamos somar o efeito contemporâneo com o efeito defasado:
+
+- **Impacto contemporâneo (β₁):** `r round(coef(m3)["cambio"], 4)` - efeito imediato no mesmo mês
+- **Impacto defasado (β₄):** `r round(coef(m3)["cambio_lag"], 4)` - efeito que se manifesta no mês seguinte
+- **Impacto total:** `r round(coef(m3)["cambio"] + coef(m3)["cambio_lag"], 4)`
+
+Isso significa que um choque de 1 p.p. no câmbio tem um efeito acumulado de `r round(coef(m3)["cambio"] + coef(m3)["cambio_lag"], 4)` p.p. nos preços considerando os dois períodos. 
+
+O coeficiente da variável dependente defasada (setor_lag) captura a persistência dos preços - se for significativo e positivo, indica que choques de preços têm efeitos duradouros.
+
+```{r results='asis'}
+stargazer(m1, m2, m3, type = "html", digits = 4)
+```
+
+# Testes de Diagnóstico
+
+**Teste Ljung-Box (Autocorrelação):**
+
+```{r}
+ljung_m3 <- Box.test(residuals(m3), lag = 12, type = "Ljung-Box")
+ljung_m3
+```
+
+P-valor = `r round(ljung_m3$p.value, 3)`. Como p > 0.05, não rejeitamos H₀ - não há evidência de autocorrelação nos resíduos. A inclusão das defasagens ajudou a capturar a dinâmica temporal dos dados.
+
+**Teste Breusch-Pagan (Heterocedasticidade):**
+
+```{r}
+bp <- bptest(m3)
+bp
+```
+
+**Hipóteses:**  
+- H₀: Homocedasticidade (variância dos erros é constante)  
+- H₁: Heterocedasticidade (variância dos erros não é constante)
+
+P-valor = `r round(bp$p.value, 3)`. Não rejeitamos H₀ ao nível de 5%, indicando que não há evidência forte de heterocedasticidade. Os erros parecem ter variância relativamente constante ao longo do tempo, o que é uma propriedade desejável.
+
+Esses resultados sugerem que o modelo está razoavelmente bem especificado em termos de suas propriedades estatísticas.
+
+# Erros Robustos HAC
+
+```{r}
+m3_hac <- coeftest(m3, vcov = vcovHAC(m3))
+m3_hac
+```
+
+Os erros HAC (Heteroskedasticity and Autocorrelation Consistent) são robustos tanto à heterocedasticidade quanto à autocorrelação. Mesmo que os testes anteriores não tenham detectado esses problemas, é boa prática usar erros robustos para ter inferências mais confiáveis.
+
+**Comparação da significância do câmbio:**
+
+```{r}
+pv_padrao <- summary(m3)$coef["cambio", "Pr(>|t|)"]
+pv_hac <- m3_hac["cambio", "Pr(>|t|)"]
+```
+
+- P-valor com erros padrão: `r round(pv_padrao, 4)`
+- P-valor com erros HAC: `r round(pv_hac, 4)`
+
+```{r results='asis'}
+stargazer(m3, m3, type = "html",
+          se = list(NULL, sqrt(diag(vcovHAC(m3)))),
+          column.labels = c("Padrão", "HAC"), digits = 4)
+```
+
+A diferença entre os p-valores é de `r round(abs(pv_padrao - pv_hac), 4)`. A significância dos coeficientes permanece praticamente a mesma, confirmando que as conclusões do modelo são robustas. 
+
+Em particular, o câmbio continua não sendo estatisticamente significativo mesmo com erros HAC, reforçando que não há evidência de repasse cambial forte para o setor 13 no período analisado.
+
+# Resumo
+
+| Modelo | Repasse Cambial | R² | Autocorr. | Heteroced. |
+|--------|----------------|-----|-----------|------------|
+| Básico | 0.0067 | 0.004 | Não | - |
+| Sazonal | -0.0038 | 0.228 | Não | - |
+| Defasagens | -0.0471 (total) | 0.253 | Não | Não |
+
+**Principais conclusões:**
+
+1. O modelo básico tem poder explicativo muito baixo (R² < 1%)
+
+2. A inclusão de dummies sazonais melhora bastante o ajuste (R² sobe para 23%), indicando que padrões sazonais são importantes para explicar a variação de preços no setor 13
+
+3. O modelo completo com defasagens alcança R² de 25%, explicando 1/4 da variação dos preços
+
+4. **Não há evidência estatística de repasse cambial significativo** para o setor 13 - o coeficiente do câmbio não é significativo em nenhum dos modelos, e o impacto total estimado no modelo completo é pequeno e não significativo
+
+5. Os efeitos sazonais (especialmente abril e maio) são os fatores mais relevantes para explicar os preços desse setor
+
+6. O modelo passa nos testes diagnósticos e os resultados são robustos ao uso de erros HAC

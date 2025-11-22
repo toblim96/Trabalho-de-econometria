@@ -1,0 +1,33 @@
+RELATÓRIO DETALHADO - QUESTÃO 1.9
+=================================
+
+TESTE DE WHITE PARA DETECÇÃO DE HETEROCEDASTICIDADE
+--------------------------------------------------
+
+ESPECIFICAÇÃO DO MODELO:
+Variável Dependente: log_wage_homo
+Variáveis Independentes: education, experience, experience_sq,
+                         north, northeast, south, centerwest, male, white
+
+ESPECIFICAÇÃO DO TESTE DE WHITE:
+bptest(modelo, ~ fitted(modelo) + I(fitted(modelo)^2))
+
+RESULTADOS DO TESTE:
+--------------------
+Estatística LM: 0.3808 
+Graus de liberdade: 2
+p-value: 0.826622 
+
+INTERPRETAÇÃO:
+--------------
+Hipótese Nula (H0): Homocedasticidade
+Hipótese Alternativa (H1): Heterocedasticidade
+
+CONCLUSÃO: NÃO REJEITAMOS H0 ao nível de 5% de significância
+           → NÃO há evidências de heterocedasticidade
+           → A variância dos erros é CONSTANTE (homocedasticidade)
+
+RESULTADO ESPERADO:
+-------------------
+Como log_wage_homo foi gerado com erros homocedásticos,
+espera-se NÃO rejeitar H0 (p-value > 0.05)

@@ -1,0 +1,35 @@
+RELATÓRIO FINAL - QUESTÃO 1.8
+=============================
+
+RESPOSTA À PERGUNTA PRINCIPAL:
+'O QUE MUDOU NO GRÁFICO DOS RESÍDUOS CONTRA ANOS DE ESTUDO?'
+------------------------------------------------------------
+
+📊 MUDANÇA OBSERVADA:
+   • MODELO HOMOCEDÁSTICO: Resíduos com variância constante
+   • MODELO HETEROCEDÁSTICO: PADRÃO DE FUNIL - variância aumenta com educação
+   • Isso caracteriza HETEROCEDASTICIDADE
+
+📈 RESULTADOS DOS TESTES ESTATÍSTICOS:
+Teste de Breusch-Pagan - Modelo Heterocedástico:
+   p-value = 0.011264 
+   Conclusão: ✅ REJEITA homocedasticidade (heterocedasticidade presente) 
+
+Teste de Breusch-Pagan - Modelo Homocedástico:
+   p-value = 0.806218 
+   Conclusão: ✅ NÃO REJEITA homocedasticidade 
+
+🎯 INTERPRETAÇÃO ECONÔMICA:
+A heterocedasticidade reflete que:
+• Educação superior oferece trajetórias profissionais mais diversificadas
+• Salários tornam-se mais dispersos com maior qualificação
+• Pessoas com mesma educação podem ter remunerações muito diferentes
+• Isso é comum em mercados de trabalho reais
+
+📁 ARQUIVOS GERADOS:
+• modelo_mincer_hetero.html (Questão 1.4)
+• resultado_comparativo_1.5.html (Questão 1.5)
+• grafico_3d_hetero_1.6.html (Questão 1.6)
+• comparacao_residuos_educacao_1.8.png (RESPOSTA PRINCIPAL)
+• histograma_residuos_hetero_1.7.png (Questão 1.7)
+• residuos_quadrado_1.7.png (Questão 1.7)
